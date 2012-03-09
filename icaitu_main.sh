@@ -39,7 +39,7 @@ function init(){
 
 function logger ()
 {
-    time=`date +"%Y-%m-%d %H:%m:%S"`;
+    time=`date +"%Y-%m-%d %T"`
     echo "[$time] $*"
 }
 
