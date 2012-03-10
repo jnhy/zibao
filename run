@@ -1,0 +1,17 @@
+#!/bin/bash
+
+function scriptPath()
+{
+    readlink -f "$0" |sed -e "s#/[^/]*\$##g"
+}
+
+l_path=`scriptPath`
+
+
+who=$(id -u)
+
+if [[ $who -eq 0 ]]; then
+    exec setuidgid rex $l_path/icaitu_main.sh >>  $l_path/log 2>&1
+else
+    exec $l_path/icaitu_main.sh >>  $l_path/log 2>&1
+fi

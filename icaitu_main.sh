@@ -6,7 +6,7 @@ idfile=""
 rawidfile=""
 since_id=""
 rawid=""
-SLEEP_INTERVAL=5
+SLEEP_INTERVAL=50
 
 
 function saveSinceID(){
@@ -50,7 +50,7 @@ function loginIcaitu()
 	exit
     fi
     local post_query="LoginForm%5Busername%5D=$ict_username&LoginForm%5Bpassword%5D=$ict_password&LoginForm%5BrememberMe%5D=on"
-    logger $post_query
+
     > $path/cookie.txt
     curl -s -D $path/cookie.txt -d "$post_query" "http://www.icaitu.com/"
     logger "Logged in with cookie $path/cookie.txt"
@@ -66,8 +66,8 @@ function publish()
     local api="http://www.icaitu.com/collect/bookmarkajax"
     local query="boardId=15397&source=$URL&url%5B%5D=$IMG&type=public&caption=$TEXT&sync%5B%5D=tfanfou"
     if [ ! -f $path/cookie.txt ]; then
-	logger "You have not logged in!"
-	exit
+        logger "You have not logged in!"
+        exit
     fi
 
     curl -s -b "$path/cookie.txt" -d "$query" "$api"
@@ -95,10 +95,13 @@ function parseMsgs(){
 	url="http://fanfou.com/statuses/$id"
 	text=`echo $msg |grep -oP "(?<=<text><!\[CDATA\[).*?(?=\]\])" |sed -e "s#<[^<>]*>##g"`
 	img_url=`echo $msg |grep -oP "(?<=<largeurl>)[^<>]+(?=</largeurl>)"`
+    screen_name=`echo $msg |grep -oP "(?<=<screen_name>)[^<>]+(?=</screen_name>)"`
+
 	if [[ ! -z $id ]]; then
 	    logger $rawid $id $url $img_url "\"$text\""
-	    publish $url $img_url "$text"
+	    publish $url $img_url "赞@$screen_name $text"
 	fi
+
     done
 }
 
